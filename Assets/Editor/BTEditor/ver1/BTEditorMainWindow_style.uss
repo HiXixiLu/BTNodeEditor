@@ -1,0 +1,29 @@
+﻿.container{
+		flex-direction: row;
+		align-content: stretch;
+		align-items: stretch;
+		flex-basis:auto;
+		flex-grow:1;
+		margin-bottom: 10;
+}
+
+Label {
+    font-size: 20;
+    font-weight: bold;
+    text-color: rgb(68, 138, 255);
+}
+.rightPanel{
+		width: 120;
+		min-width: 120;
+		flex-grow: 1;
+}
+.leftPanel{
+		min-width: 150;
+		flex-grow: 11;
+}
+.btn{
+		max-height: 30;
+		flex: "flex-shrink";
+		margin-left: 10;
+		margin-right: 10;
+}
