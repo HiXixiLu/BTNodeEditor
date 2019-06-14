@@ -11,6 +11,8 @@ public static class MyDefined
     public static float ConnectionPointHeight = 20f;
     public static float lineWidth = 2f;
 
+    public static float toolBarHeight = 30f;
+
     // 各种文件路径
     public static string nodeBtnPath = "Editor/Textures/BtnNormal.png";
     public static string nodeSelectedBtnPath = "Editor/Textures/BtnSelected.png";

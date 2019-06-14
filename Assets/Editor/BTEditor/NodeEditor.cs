@@ -19,19 +19,18 @@ public class NodeEditorWindow : EditorWindow
     // 节点工厂
     private NodesFactory _nodesFactory;
 
+    // 侧边栏固定菜单
+    Rect _menuBar;
 
     [MenuItem("工具/行为树编辑器")]
     private static void OpenEditorWindsow() {
         NodeEditorWindow window = GetWindow<NodeEditorWindow>();
-        window.titleContent = new GUIContent("Node-based Editor");
+        window.titleContent = new GUIContent("BTs Nodes Editor");
     }
 
     private void OnEnable()
     {
-        _nodesFactory = new NodesFactory().Instance;
-
-        
-        
+        _nodesFactory = new NodesFactory().Instance;        
     }
 
     private void OnGUI()
@@ -39,6 +38,8 @@ public class NodeEditorWindow : EditorWindow
         // 绘制纵横网格
         DrawGrid(20, 0.2f, Color.gray, Vector2.zero);
         DrawGrid(100, 0.4f, Color.gray, Vector2.zero);
+
+        DrawMenuBar();  // 绘制工具侧边栏
 
         DrawConnections();  //线条画在最下层
         DrawUnlinkedConnectionLine(Event.current);   //从outPoint到鼠标点的连线
@@ -271,6 +272,25 @@ public class NodeEditorWindow : EditorWindow
 
         Handles.color = Color.white;
         Handles.EndGUI();
+    }
+    // 侧边栏窗口 ToolBar绘制
+    private void DrawMenuBar()
+    {
+        _menuBar = new Rect(0, 0, position.width, MyDefined.toolBarHeight);
+
+        GUILayout.BeginArea(_menuBar, EditorStyles.toolbar);
+        GUILayout.BeginHorizontal();
+
+        GUILayout.Button(new GUIContent("Save"), EditorStyles.toolbarButton, GUILayout.Width(80));
+        GUILayout.Space(5);
+        GUILayout.Button(new GUIContent("Load"), EditorStyles.toolbarButton, GUILayout.Width(80));
+        GUILayout.Space(5);
+        GUILayout.Button(new GUIContent("Check"), EditorStyles.toolbarButton, GUILayout.Width(80));
+        GUILayout.Space(5);
+        GUILayout.Button(new GUIContent("Advise"), EditorStyles.toolbarButton, GUILayout.Width(80));
+
+        GUILayout.EndHorizontal();
+        GUILayout.EndArea();
     }
 
     //接收被点击的out节点
