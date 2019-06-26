@@ -6,48 +6,55 @@ using UnityEngine;
 
 public class ConditionNode : BaseNode
 {
-    // 长款规格
-    int nodeWidth = 150;
-    int nodeHeight = 100;
-
     private string label = "Condition";
     public GameObject obj;
 
     // 节点不同状态下的特性
-    public GUIStyle style;
-    private GUIStyle defaultNodeStyle;
-    private GUIStyle selectedNodeStyle;
+    //public GUIStyle style;
+    //private GUIStyle defaultNodeStyle;
+    //private GUIStyle selectedNodeStyle;
     private GUIStyle inPointStyle;
     private GUIStyle outPointStyle;
 
+    private Texture2D defaultBoxImage;
+    private Texture2D selectedBoxImage;
+    private Texture2D backgroundImage;
+
     public override void InitiateStyle()
     {
-        defaultNodeStyle = new GUIStyle();
-        defaultNodeStyle.normal.background = EditorUtility.LoadTextureByIO(MyDefined.actionNodeSelectedBtnPath, nodeWidth, nodeHeight);
-        defaultNodeStyle.border = new RectOffset(MyDefined.BorderOffset, MyDefined.BorderOffset, MyDefined.BorderOffset, MyDefined.BorderOffset);
+        //defaultNodeStyle = new GUIStyle();
+        //defaultNodeStyle.normal.background = EditorUtility.LoadTextureByIO(MyDefined.BtnLeafPath, nodeWidth, nodeHeight);
+        //defaultNodeStyle.border = new RectOffset(MyDefined.BorderOffset, MyDefined.BorderOffset, MyDefined.BorderOffset, MyDefined.BorderOffset);
 
-        this.style = defaultNodeStyle;
+        //this.style = defaultNodeStyle;
 
-        selectedNodeStyle = new GUIStyle();
-        selectedNodeStyle.normal.background = EditorUtility.LoadTextureByIO(MyDefined.nodeSelectedBtnPath, nodeWidth, nodeHeight);
-        selectedNodeStyle.border = new RectOffset(MyDefined.BorderOffset, MyDefined.BorderOffset, MyDefined.BorderOffset, MyDefined.BorderOffset);
+        //selectedNodeStyle = new GUIStyle();
+        //selectedNodeStyle.normal.background = EditorUtility.LoadTextureByIO(MyDefined.BtnLeafOnPath, nodeWidth, nodeHeight);
+        //selectedNodeStyle.border = new RectOffset(MyDefined.BorderOffset, MyDefined.BorderOffset, MyDefined.BorderOffset, MyDefined.BorderOffset);
 
+        defaultBoxImage = EditorUtility.LoadTextureByIO(MyDefined.BtnLeafPath, MyDefined.nodeWidth, MyDefined.nodeHeight);
+        selectedBoxImage = EditorUtility.LoadTextureByIO(MyDefined.BtnLeafOnPath, MyDefined.nodeWidth, MyDefined.nodeHeight);
+        backgroundImage = defaultBoxImage;
     }
 
     public ConditionNode(Vector2 position, OnClickAsInPoint OnClickInPoint, OnClickAsOutPoint OnClickOutPoint, Action<BaseNode> OnClickRemoveNode)
     {
         InitiateStyle();
-        rect = new Rect(position.x, position.y, nodeWidth, nodeHeight);
+        rect = new Rect(position.x, position.y, MyDefined.nodeWidth, MyDefined.nodeHeight);
         this.OnRemoveNode = OnClickRemoveNode;
         this.inPointClicked = OnClickInPoint;
         this.outPointClicked = OnClickOutPoint;
+
+        children = new List<BaseNode>();
+        nodeType = NodeType.Condition;
     }
 
     public override void Draw()
     {
         GUI.BeginGroup(rect);
-        GUI.Box(new Rect(0, 0, nodeWidth, nodeHeight), label, style);
-        EditorGUI.ObjectField(new Rect(10, 60, 130, 20), obj, typeof(GameObject), true);    // EditorGUI 类下包含了各种 Unity开放的编辑组件
+        GUI.DrawTexture(MyDefined.LeafRect, backgroundImage, ScaleMode.StretchToFill);
+        GUI.Label(new Rect(10, 10, 80, 20), label);
+        EditorGUI.ObjectField(new Rect(10, 60, 160, 16), obj, typeof(GameObject), true);    // EditorGUI 类下包含了各种 Unity开放的编辑组件
         GUI.EndGroup();
     }
 
@@ -68,14 +75,16 @@ public class ConditionNode : BaseNode
                         isDragged = true;
                         GUI.changed = true;
                         isSelected = true;
-                        style = selectedNodeStyle;
+                        //style = selectedNodeStyle;
+                        backgroundImage = selectedBoxImage;
                         inPointClicked(this);
                     }
                     else
                     {
                         GUI.changed = true;
                         isSelected = false;
-                        style = defaultNodeStyle;
+                        //style = defaultNodeStyle;
+                        backgroundImage = defaultBoxImage;
                     }
                 }
                 if (e.button == 1 && rect.Contains(e.mousePosition) && isSelected)

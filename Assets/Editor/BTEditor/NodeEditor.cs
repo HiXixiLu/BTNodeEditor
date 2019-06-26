@@ -5,10 +5,18 @@ using UnityEditor;
 using System;
 using static UnityEditor.GenericMenu;
 
+/* TODO LIST:
+ * 1. 画布拖拽的卡顿问题要解决
+ * 2. GUI元素要能多选
+ * 3. 编辑行为可倒退 —— 增加缓存栈
+ * 4. 能不能在编辑过程中就动态组织好树结构？想清楚要不要重构？
+ * 5. bug: 节点删除了，但绘制的连线还在
+ */
 public class NodeEditorWindow : EditorWindow
 {
     private List<BaseNode> nodes;
     private List<ConnectionLine> connections;
+    public BaseNode treeRoot;
 
     public BaseNode selectedInPoint;
     public BaseNode selectedOutPoint;
@@ -17,7 +25,7 @@ public class NodeEditorWindow : EditorWindow
     private Vector2 gridOffset = Vector2.zero;
 
     // 节点工厂
-    private NodesFactory _nodesFactory;
+    private NodesFactory _nodesFactory; // TODO： 这个请改成单例谢谢
 
     // 侧边栏固定菜单
     Rect _menuBar;
@@ -110,11 +118,15 @@ public class NodeEditorWindow : EditorWindow
     private void ProcessContextMenu(Vector2 mousePosition)
     {
         GenericMenu genericMenu = new GenericMenu();
-        genericMenu.AddItem(new GUIContent("Add Root"), false, ()=> OnClickAddNode(mousePosition, BTNodes.Base));
+
+        // 勘误，Root这种节点是不存在的，所谓的 Root 节点也只不过是 Control Flow节点中的一种
+        //genericMenu.AddItem(new GUIContent("Add Root"), false, ()=> OnClickAddNode(mousePosition, BTNodes.Base));
+
         genericMenu.AddItem(new GUIContent("Add Fallback"), false, () => OnClickAddNode(mousePosition, BTNodes.Fallback));
         genericMenu.AddItem(new GUIContent("Add Sequence"), false, () => OnClickAddNode(mousePosition, BTNodes.Sequence));
         genericMenu.AddItem(new GUIContent("Add Parallel"), false, () => OnClickAddNode(mousePosition, BTNodes.Parallel));
         genericMenu.AddItem(new GUIContent("Add Decorator"), false, () => OnClickAddNode(mousePosition, BTNodes.Decorator));
+        genericMenu.AddItem(new GUIContent("Add Selector"), false, () => OnClickAddNode(mousePosition, BTNodes.Selector));
         genericMenu.AddItem(new GUIContent("Add Action"), false, () => OnClickAddNode(mousePosition, BTNodes.Action));
         genericMenu.AddItem(new GUIContent("Add Condition"), false, () => OnClickAddNode(mousePosition, BTNodes.Condition));
         genericMenu.ShowAsContext();
@@ -132,9 +144,9 @@ public class NodeEditorWindow : EditorWindow
         nodes.Add(_nodesFactory.CreateTheNode(mousePosition, nodeType, OnClickAsInPoint, OnClickAsOutPoint, OnClickRemoveNode));
     }
 
-    //private void OnClickInPoint(ConnectionPoint inPoint)
+    //private void OnClickInPoint(ConnectionPoint childNode)
     //{
-    //    selectedInPoint = inPoint;
+    //    selectedInPoint = childNode;
 
     //    if (selectedOutPoint != null)
     //    {
@@ -150,9 +162,9 @@ public class NodeEditorWindow : EditorWindow
     //    }
     //}
 
-    //private void OnClickOutPoint(ConnectionPoint outPoint)
+    //private void OnClickOutPoint(ConnectionPoint parentNode)
     //{
-    //    selectedOutPoint = outPoint;
+    //    selectedOutPoint = parentNode;
 
     //    if (selectedInPoint != null)
     //    {
@@ -199,7 +211,7 @@ public class NodeEditorWindow : EditorWindow
 
             for (int i = 0; i < connections.Count; i++)
             {
-                if (connections[i].inPoint == node || connections[i].outPoint == node)
+                if (connections[i].childNode == node || connections[i].parentNode == node)
                 {
                     connectionsToRemove.Add(connections[i]);
                 }
@@ -226,7 +238,7 @@ public class NodeEditorWindow : EditorWindow
         }
     }
 
-    // 从选中 outPoint 到鼠标位置的连线绘制
+    // 从选中 parentNode 到鼠标位置的连线绘制
     private void DrawUnlinkedConnectionLine(Event e) {
 
         if (selectedOutPoint != null && selectedInPoint == null)
@@ -288,6 +300,10 @@ public class NodeEditorWindow : EditorWindow
         GUILayout.Button(new GUIContent("Check"), EditorStyles.toolbarButton, GUILayout.Width(80));
         GUILayout.Space(5);
         GUILayout.Button(new GUIContent("Advise"), EditorStyles.toolbarButton, GUILayout.Width(80));
+        GUILayout.Space(5);
+        if (GUILayout.Button(new GUIContent("TestBtn"), EditorStyles.toolbarButton, GUILayout.Width(80))) {
+            ReconstructBehaviorTree();
+        };
 
         GUILayout.EndHorizontal();
         GUILayout.EndArea();
@@ -311,6 +327,55 @@ public class NodeEditorWindow : EditorWindow
             ClearConnectionSelection();
         }
         
+    }
+
+    void ReconstructBehaviorTree() {
+        HashSet<BaseNode> nodeSet = new HashSet<BaseNode>();
+        foreach(ConnectionLine cl in connections) {
+            cl.parentNode.children.Add(cl.childNode);
+            cl.childNode.parent = cl.parentNode;
+            nodeSet.Add(cl.parentNode);
+            nodeSet.Add(cl.childNode);
+        }
+
+        IEnumerator<BaseNode> itr = nodeSet.GetEnumerator();
+        while (itr.MoveNext()) {
+            itr.Current.WriteoutNodeType(); // test only
+            if (itr.Current.parent == null) {
+                treeRoot = itr.Current;
+            }
+        }
+        Debug.Log("根节点： " + treeRoot.nodeType.ToString());
+
+        // test only: Traverse the tree by level
+        // 求你赶紧不择手段理解下多叉树及其相关高效的算法吧！！！！
+        List<BaseNode> nodeQueue = new List<BaseNode>();
+        nodeQueue.Add(treeRoot);
+        //itr = nodeQueue.GetEnumerator();
+        //while (itr.MoveNext()) {
+        //    if (itr.Current.children.Count > 0) {
+        //        foreach (BaseNode node in itr.Current.children) {
+        //            nodeQueue.Add(node);
+        //        }
+        //    }
+        //}
+        //itr.Reset();
+        //while (itr.Current != null)
+        //{
+        //    itr.Current.WriteoutNodeType();
+        //    itr.MoveNext();
+        //}
+        for (int i = 0; i < nodeQueue.Count; i++) {
+            if (nodeQueue[i].children.Count > 0) {
+                foreach (BaseNode node in nodeQueue[i].children) {
+                    nodeQueue.Add(node);
+                }
+            }
+        }
+        for (int i = 0; i < nodeQueue.Count; i++)
+        {
+            Debug.Log("层次遍历： index = " + i + " 节点：" + nodeQueue[i].nodeType.ToString());
+        }
     }
 }
 

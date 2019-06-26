@@ -1,6 +1,19 @@
 ﻿using System;
 using UnityEngine;
 using UnityEditor;
+using System.Collections.Generic;
+
+
+public enum NodeType {
+    AbstractNode,
+    Fallback,
+    Sequence,
+    Selector,
+    Decorator,
+    Parallel,
+    Condition,
+    Action,
+}
 
 /*
  * 所绘制节点的基类
@@ -8,6 +21,10 @@ using UnityEditor;
 */
 public abstract class BaseNode
 {
+    public NodeType nodeType;
+    public BaseNode parent;
+    public List<BaseNode> children;
+
     public Rect rect;
     public bool isDragged;  //拖动控制状态 
     public bool isSelected; //是否选中的控制状态位
@@ -29,7 +46,7 @@ public abstract class BaseNode
     public virtual void ProcessContextMenu() {
         GenericMenu genericMenu = new GenericMenu();
         genericMenu.AddItem(new GUIContent("Remove Node"), false, OnClickRemoveNode);
-        genericMenu.AddItem(new GUIContent("Make Connection"), false, OnClickMakeConnection);
+        genericMenu.AddItem(new GUIContent("Make Connection to Child"), false, OnClickMakeConnection);
         genericMenu.ShowAsContext();
     }
 
@@ -45,6 +62,16 @@ public abstract class BaseNode
     public void OnClickMakeConnection() {
         if (outPointClicked != null) {
             outPointClicked(this);
+        }
+    }
+
+    public void WriteoutNodeType() {
+        if (nodeType != NodeType.AbstractNode) {
+#if UNITY_EDITOR
+            Debug.Log("行为树节点:" + nodeType.ToString());
+#else
+            Console.WriteLine("行为树节点:" + nodeType.ToString());
+#endif
         }
     }
 }

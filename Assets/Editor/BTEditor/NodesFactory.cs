@@ -25,9 +25,9 @@ public class NodesFactory
         BaseNode nodeCreated;
 
         switch (node) {
-            case BTNodes.Base:
-                nodeCreated = new RootNode(position, OnClickInPoint, OnClickOutPoint, OnClickRemoveNode);
-                break;
+            //case BTNodes.Base:
+            //    nodeCreated = new RootNode(position, OnClickInPoint, OnClickOutPoint, OnClickRemoveNode);
+            //    break;
             case BTNodes.Fallback:
                 nodeCreated = new FallbackNode(position, OnClickInPoint, OnClickOutPoint, OnClickRemoveNode);
                 break;
@@ -40,6 +40,9 @@ public class NodesFactory
             case BTNodes.Decorator:
                 nodeCreated = new DecoratorNode(position, OnClickInPoint, OnClickOutPoint, OnClickRemoveNode);
                 break;
+            case BTNodes.Selector:
+                nodeCreated = new SelectorNode(position, OnClickInPoint, OnClickOutPoint, OnClickRemoveNode);
+                break;
             case BTNodes.Action:
                 nodeCreated = new ActionNode(position, OnClickInPoint, OnClickOutPoint, OnClickRemoveNode);
                 break;
@@ -47,7 +50,7 @@ public class NodesFactory
                 nodeCreated = new ConditionNode(position, OnClickInPoint, OnClickOutPoint, OnClickRemoveNode);
                 break;
             default:
-                nodeCreated = new RootNode(position, OnClickInPoint, OnClickOutPoint, OnClickRemoveNode);
+                nodeCreated = new SequenceNode(position, OnClickInPoint, OnClickOutPoint, OnClickRemoveNode);
                 break;
         }
 
