@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-public static class EditorUtility
+public static class MyEditorUtility
 {
     /// <summary>
     /// 以IO方式进行图片加载

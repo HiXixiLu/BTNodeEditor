@@ -34,8 +34,8 @@ public class SequenceNode : BaseNode
         //selectedNodeStyle.border = new RectOffset(MyDefined.BorderOffset, MyDefined.BorderOffset, MyDefined.BorderOffset, MyDefined.BorderOffset);
         //selectedNodeStyle.fontStyle = FontStyle.Bold;
 
-        defaultBoxImage = EditorUtility.LoadTextureByIO(MyDefined.BtnControlFlowPath, MyDefined.controlNodeWidth, MyDefined.controlNodeHeight);
-        selectedBoxImage = EditorUtility.LoadTextureByIO(MyDefined.BtnControlFlowOnPath, MyDefined.controlNodeWidth, MyDefined.controlNodeHeight);
+        defaultBoxImage = MyEditorUtility.LoadTextureByIO(MyDefined.BtnControlFlowPath, MyDefined.controlNodeWidth, MyDefined.controlNodeHeight);
+        selectedBoxImage = MyEditorUtility.LoadTextureByIO(MyDefined.BtnControlFlowOnPath, MyDefined.controlNodeWidth, MyDefined.controlNodeHeight);
         backgroundImage = defaultBoxImage;
     }
 

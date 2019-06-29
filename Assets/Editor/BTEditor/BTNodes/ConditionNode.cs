@@ -32,8 +32,8 @@ public class ConditionNode : BaseNode
         //selectedNodeStyle.normal.background = EditorUtility.LoadTextureByIO(MyDefined.BtnLeafOnPath, nodeWidth, nodeHeight);
         //selectedNodeStyle.border = new RectOffset(MyDefined.BorderOffset, MyDefined.BorderOffset, MyDefined.BorderOffset, MyDefined.BorderOffset);
 
-        defaultBoxImage = EditorUtility.LoadTextureByIO(MyDefined.BtnLeafPath, MyDefined.nodeWidth, MyDefined.nodeHeight);
-        selectedBoxImage = EditorUtility.LoadTextureByIO(MyDefined.BtnLeafOnPath, MyDefined.nodeWidth, MyDefined.nodeHeight);
+        defaultBoxImage = MyEditorUtility.LoadTextureByIO(MyDefined.BtnLeafPath, MyDefined.nodeWidth, MyDefined.nodeHeight);
+        selectedBoxImage = MyEditorUtility.LoadTextureByIO(MyDefined.BtnLeafOnPath, MyDefined.nodeWidth, MyDefined.nodeHeight);
         backgroundImage = defaultBoxImage;
     }
 

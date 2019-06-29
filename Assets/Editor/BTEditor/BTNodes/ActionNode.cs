@@ -27,8 +27,8 @@ public class ActionNode : BaseNode
         //selectedNodeStyle = new GUIStyle();
         //selectedNodeStyle.normal.background = EditorUtility.LoadTextureByIO(MyDefined.BtnLeafOnPath, nodeWidth, nodeHeight);  // 自定义的图片
 
-        defaultBoxImage = EditorUtility.LoadTextureByIO(MyDefined.BtnLeafPath, MyDefined.nodeWidth, MyDefined.nodeHeight);
-        selectedBoxImage = EditorUtility.LoadTextureByIO(MyDefined.BtnLeafOnPath, MyDefined.nodeWidth, MyDefined.nodeHeight);
+        defaultBoxImage = MyEditorUtility.LoadTextureByIO(MyDefined.BtnLeafPath, MyDefined.nodeWidth, MyDefined.nodeHeight);
+        selectedBoxImage = MyEditorUtility.LoadTextureByIO(MyDefined.BtnLeafOnPath, MyDefined.nodeWidth, MyDefined.nodeHeight);
         backgroundImage = defaultBoxImage;
     }
 
