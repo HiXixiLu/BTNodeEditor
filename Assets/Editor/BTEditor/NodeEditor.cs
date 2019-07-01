@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-using System;
-using static UnityEditor.GenericMenu;
 
 /* TODO LIST:
+ * 0. 一个图形化的节点属性配置面板
  * 1. 画布拖拽的卡顿问题要解决
  * 2. GUI元素要能多选
  * 3. 编辑行为可倒退 —— 增加缓存栈
@@ -29,6 +28,8 @@ public class NodeEditorWindow : EditorWindow
 
     // 侧边栏固定菜单
     Rect _menuBar;
+
+    bool isTestBtnSelected;
 
     [MenuItem("工具/行为树编辑器")]
     private static void OpenEditorWindsow() {
@@ -293,7 +294,9 @@ public class NodeEditorWindow : EditorWindow
         GUILayout.BeginArea(_menuBar, EditorStyles.toolbar);
         GUILayout.BeginHorizontal();
 
-        GUILayout.Button(new GUIContent("Save"), EditorStyles.toolbarButton, GUILayout.Width(80));
+        if (GUILayout.Button(new GUIContent("Save"), EditorStyles.toolbarButton, GUILayout.Width(80))) {
+            SerializeTheTree();
+        };
         GUILayout.Space(5);
         GUILayout.Button(new GUIContent("Load"), EditorStyles.toolbarButton, GUILayout.Width(80));
         GUILayout.Space(5);
@@ -302,7 +305,7 @@ public class NodeEditorWindow : EditorWindow
         GUILayout.Button(new GUIContent("Advise"), EditorStyles.toolbarButton, GUILayout.Width(80));
         GUILayout.Space(5);
         if (GUILayout.Button(new GUIContent("TestBtn"), EditorStyles.toolbarButton, GUILayout.Width(80))) {
-            ReconstructBehaviorTree();
+            testFunction();
         };
 
         GUILayout.EndHorizontal();
@@ -329,53 +332,13 @@ public class NodeEditorWindow : EditorWindow
         
     }
 
-    void ReconstructBehaviorTree() {
-        HashSet<BaseNode> nodeSet = new HashSet<BaseNode>();
-        foreach(ConnectionLine cl in connections) {
-            cl.parentNode.children.Add(cl.childNode);
-            cl.childNode.parent = cl.parentNode;
-            nodeSet.Add(cl.parentNode);
-            nodeSet.Add(cl.childNode);
-        }
+    void testFunction() {
+        Debug.Log("test only");
+    }
 
-        IEnumerator<BaseNode> itr = nodeSet.GetEnumerator();
-        while (itr.MoveNext()) {
-            itr.Current.WriteoutNodeType(); // test only
-            if (itr.Current.parent == null) {
-                treeRoot = itr.Current;
-            }
-        }
-        Debug.Log("根节点： " + treeRoot.nodeType.ToString());
-
-        // test only: Traverse the tree by level
-        // 求你赶紧不择手段理解下多叉树及其相关高效的算法吧！！！！
-        List<BaseNode> nodeQueue = new List<BaseNode>();
-        nodeQueue.Add(treeRoot);
-        //itr = nodeQueue.GetEnumerator();
-        //while (itr.MoveNext()) {
-        //    if (itr.Current.children.Count > 0) {
-        //        foreach (BaseNode node in itr.Current.children) {
-        //            nodeQueue.Add(node);
-        //        }
-        //    }
-        //}
-        //itr.Reset();
-        //while (itr.Current != null)
-        //{
-        //    itr.Current.WriteoutNodeType();
-        //    itr.MoveNext();
-        //}
-        for (int i = 0; i < nodeQueue.Count; i++) {
-            if (nodeQueue[i].children.Count > 0) {
-                foreach (BaseNode node in nodeQueue[i].children) {
-                    nodeQueue.Add(node);
-                }
-            }
-        }
-        for (int i = 0; i < nodeQueue.Count; i++)
-        {
-            Debug.Log("层次遍历： index = " + i + " 节点：" + nodeQueue[i].nodeType.ToString());
-        }
+    void SerializeTheTree() {
+        // TODO：图形化操作以选择保存路径
+        XmlSerializationUtil.Instance.startSerialization(ref connections);
     }
 }
 
