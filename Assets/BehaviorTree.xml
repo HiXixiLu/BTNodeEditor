@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BehaviorTree>
+  <Selector>
+    <Sequence>
+      <Parallel />
+      <Parallel>
+        <Decorator>
+          <Action />
+        </Decorator>
+      </Parallel>
+    </Sequence>
+    <Sequence>
+      <Condition />
+      <Action />
+    </Sequence>
+  </Selector>
+</BehaviorTree>

@@ -10,25 +10,21 @@ using System.IO;
 public class XmlSerializationUtil
 {
     static XmlDocument doc = new XmlDocument();
-    private static XmlSerializationUtil _instance = new XmlSerializationUtil();
+    static XmlSerializationUtil _instance = new XmlSerializationUtil();
     static XmlSerializationUtil() { }
     public static XmlSerializationUtil Instance {
         get { return _instance; }
     }
 
-    string xml_path = Application.dataPath; //TODO: 行为树保存路径可以选择
     int selectedLangIndex = 0;
 
 
-    private void StartSerializationWithTreeRoot(ref BaseNode root)
+    private void StartSerializationWithTreeRoot(ref BaseNode root, string filePath)
     {
-        string targetXmlFullPathName = xml_path + Path.DirectorySeparatorChar + "target-test.xml";
-
-
         Debug.Log("开始写入：");
 
         // 创建一个 encoding = UTF-8 的 writer
-        FileStream targetFile = File.Create(targetXmlFullPathName);
+        FileStream targetFile = File.Create(filePath);
         XmlTextWriter writer = new XmlTextWriter(targetFile, System.Text.Encoding.UTF8);
         writer.Formatting = Formatting.Indented; //设置缩进
         writer.WriteStartDocument();
@@ -55,8 +51,10 @@ public class XmlSerializationUtil
             TraverseTheTreeInDepthFirstOrder(ref child, ref w);
         }
         w.WriteEndElement();
+        w.Flush();
     }
 
+    // TODO: ball ball 你赶紧理解理解什么是 优雅的多叉树！
     private BaseNode buildBehaviorTree(ref List<ConnectionLine> cls) {
         HashSet<BaseNode> nodeSet = new HashSet<BaseNode>();
         BaseNode treeNode = null;
@@ -82,9 +80,49 @@ public class XmlSerializationUtil
         return treeNode;
     }
 
-    public void startSerialization(ref List<ConnectionLine> cls) {
+    public void startSerialization(ref List<ConnectionLine> cls, string filePath) {
         BaseNode root = buildBehaviorTree(ref cls);
-        StartSerializationWithTreeRoot(ref root);
+        StartSerializationWithTreeRoot(ref root, filePath);
+    }
+
+    //public BaseNode DeserializeXmlToTree(string filePath)
+    //{
+    //    Debug.Log("文件读取：");
+    //    BaseNode root;
+
+    //    // 创建 reader
+    //    XmlReaderSettings settings = new XmlReaderSettings();
+    //    settings.IgnoreComments = true; //忽略文档里面的注释
+    //    XmlReader reader = XmlReader.Create(filePath, settings);
+    //    doc.Load(reader);
+
+    //    XmlNode xns = doc.SelectSingleNode("BehaviorTree");
+    //    XmlElement xe = (XmlElement)xns.FirstChild;   // 根节点
+    //    Debug.Log(xe.Name);
+        
+
+    //    Debug.Log("反序列化完成");
+    //}
+
+    public NodeType IdentifyNodeType(string name) {
+        switch (name) {
+            case "Sequence":
+                return NodeType.Sequence;
+            case "Fallback":
+                return NodeType.Fallback;
+            case "Selector":
+                return NodeType.Selector;
+            case "Parallel":
+                return NodeType.Parallel;
+            case "Decorator":
+                return NodeType.Decorator;
+            case "Action":
+                return NodeType.Action;
+            case "Condition":
+                return NodeType.Condition;
+            default:
+                return NodeType.AbstractNode;
+        }
     }
 
 }

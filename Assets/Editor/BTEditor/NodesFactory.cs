@@ -21,32 +21,32 @@ public class NodesFactory
 
     /* 委托参数的用法 —— 这里看来，委托类型在其所被声明的类以外的类引用时，引用语法和 Enum 的引用语法非常相似
      */
-    public BaseNode CreateTheNode(Vector2 position, BTNodes node, BaseNode.OnClickAsInPoint OnClickInPoint, BaseNode.OnClickAsOutPoint OnClickOutPoint, Action<BaseNode> OnClickRemoveNode) {
+    public BaseNode CreateTheNode(Vector2 position, NodeType node, BaseNode.OnClickAsInPoint OnClickInPoint, BaseNode.OnClickAsOutPoint OnClickOutPoint, Action<BaseNode> OnClickRemoveNode) {
         BaseNode nodeCreated;
 
         switch (node) {
             //case BTNodes.Base:
             //    nodeCreated = new RootNode(position, OnClickInPoint, OnClickOutPoint, OnClickRemoveNode);
             //    break;
-            case BTNodes.Fallback:
+            case NodeType.Fallback:
                 nodeCreated = new FallbackNode(position, OnClickInPoint, OnClickOutPoint, OnClickRemoveNode);
                 break;
-            case BTNodes.Sequence:
+            case NodeType.Sequence:
                 nodeCreated = new SequenceNode(position, OnClickInPoint, OnClickOutPoint, OnClickRemoveNode);
                 break;
-            case BTNodes.Parallel:
+            case NodeType.Parallel:
                 nodeCreated = new ParallelNode(position, OnClickInPoint, OnClickOutPoint, OnClickRemoveNode);
                 break;
-            case BTNodes.Decorator:
+            case NodeType.Decorator:
                 nodeCreated = new DecoratorNode(position, OnClickInPoint, OnClickOutPoint, OnClickRemoveNode);
                 break;
-            case BTNodes.Selector:
+            case NodeType.Selector:
                 nodeCreated = new SelectorNode(position, OnClickInPoint, OnClickOutPoint, OnClickRemoveNode);
                 break;
-            case BTNodes.Action:
+            case NodeType.Action:
                 nodeCreated = new ActionNode(position, OnClickInPoint, OnClickOutPoint, OnClickRemoveNode);
                 break;
-            case BTNodes.Condition:
+            case NodeType.Condition:
                 nodeCreated = new ConditionNode(position, OnClickInPoint, OnClickOutPoint, OnClickRemoveNode);
                 break;
             default:

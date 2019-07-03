@@ -27,14 +27,3 @@ public static class MyDefined
     public static Rect controlFlowRect = new Rect(0, 0, MyDefined.controlNodeWidth, MyDefined.controlNodeHeight);
     public static Rect LeafRect = new Rect(0, 0, nodeWidth, nodeHeight);
 }
-
-public enum BTNodes {
-    Base,
-    Action,
-    Condition,
-    Fallback,
-    Parallel,
-    Sequence,
-    Decorator,
-    Selector
-}

@@ -9,7 +9,7 @@ using UnityEditor;
  * 2. GUI元素要能多选
  * 3. 编辑行为可倒退 —— 增加缓存栈
  * 4. 能不能在编辑过程中就动态组织好树结构？想清楚要不要重构？
- * 5. bug: 节点删除了，但绘制的连线还在
+ * 5. bug: 节点删除了，但绘制的红色连线还在
  */
 public class NodeEditorWindow : EditorWindow
 {
@@ -28,6 +28,8 @@ public class NodeEditorWindow : EditorWindow
 
     // 侧边栏固定菜单
     Rect _menuBar;
+    string savePath;
+    string loadFilePath;
 
     bool isTestBtnSelected;
 
@@ -48,11 +50,11 @@ public class NodeEditorWindow : EditorWindow
         DrawGrid(20, 0.2f, Color.gray, Vector2.zero);
         DrawGrid(100, 0.4f, Color.gray, Vector2.zero);
 
-        DrawMenuBar();  // 绘制工具侧边栏
-
         DrawConnections();  //线条画在最下层
         DrawUnlinkedConnectionLine(Event.current);   //从outPoint到鼠标点的连线
         DrawNodes();
+
+        DrawMenuBar();  // 绘制工具侧边栏
 
         ProcessNodeEvents(Event.current);
         ProcessEvents(Event.current);
@@ -295,10 +297,16 @@ public class NodeEditorWindow : EditorWindow
         GUILayout.BeginHorizontal();
 
         if (GUILayout.Button(new GUIContent("Save"), EditorStyles.toolbarButton, GUILayout.Width(80))) {
-            SerializeTheTree();
+            savePath = EditorUtility.SaveFilePanel("文件保存路径", Application.dataPath,"BehaviorTree", "xml");
+            Debug.Log(savePath);
+            SerializeTheTree(savePath);
         };
         GUILayout.Space(5);
-        GUILayout.Button(new GUIContent("Load"), EditorStyles.toolbarButton, GUILayout.Width(80));
+        if (GUILayout.Button(new GUIContent("Load"), EditorStyles.toolbarButton, GUILayout.Width(80))) {
+
+            loadFilePath = EditorUtility.OpenFilePanelWithFilters("xml树文件路径", Application.dataPath, new[] { "XML", "xml" });
+
+        };
         GUILayout.Space(5);
         GUILayout.Button(new GUIContent("Check"), EditorStyles.toolbarButton, GUILayout.Width(80));
         GUILayout.Space(5);
@@ -336,10 +344,13 @@ public class NodeEditorWindow : EditorWindow
         Debug.Log("test only");
     }
 
-    void SerializeTheTree() {
-        // TODO：图形化操作以选择保存路径
-        XmlSerializationUtil.Instance.startSerialization(ref connections);
+    void SerializeTheTree(string filePath) {
+
+        XmlSerializationUtil.Instance.startSerialization(ref connections, filePath);
     }
+    //void LoadTree(string filePath) {
+    //    treeRoot = XmlSerializationUtil.Instance.DeserializeXmlToTree(filePath);
+    //}
 }
 
     
